@@ -3,7 +3,9 @@ Paper, Code and Materials for Replication for Paper "Riesgo Adicional en la mort
 "Additional mortality risk in old age widows and widowers in Argentina, 2015-16" 
 Paper Published in the Argentine Public Health Journal No 13, 2021 (Revista Argentina de Salud Pública, Nº13, 2021)
 
-http://www.rasp.msal.gov.ar/ 
+
+http://rasp.msal.gov.ar/rasp/articulos/vol13/AO_Bramajoe28.pdf
+
 
 The code contains instructions to upload the dataset and basically is a walkthrough to show how to do a 
 standardization of death rates, a linear Kitagawa/Oaxaca-Blinder decomposition 
