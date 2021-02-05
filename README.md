@@ -16,8 +16,8 @@ but everything works alright and I believe it is straightforward to understand.
 However, since this article was built in purpose to help students to get familiar with these methods and their logic, 
 so questions are welcome :) 
 
-Many thanks to José Manuel Aburto, Tim Riffe and Alyson van Raalte 
+Many thanks to José Manuel Aburto, Christian Dudel, Tim Riffe, Alyson van Raalte and my EDSD friends (special shoutout to Daniel Zazueta Borboa and Qi Cui for their patience)
 for teaching me how to code this and for some of the methods I used here, and to
-Daniel Zazueta for his opinions . 
+Daniel Zazueta for his opinions and judgement. 
 
 You can reach me via email (onbramajo@gmail.com / obramajo@ced.uab.es) or by Twitter DM (@octaviobramajo)
