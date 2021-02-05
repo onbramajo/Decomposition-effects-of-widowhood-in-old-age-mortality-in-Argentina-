@@ -1,4 +1,8 @@
+#limpio los datos para leer
+
 rm(list=ls())
+
+###cargo estos paquetes que voy a usar, el primero para leer los datos, el segundo para ordenar y hacer algunas operaciones sencillas de manipulaci贸n de datos...
 library(readr)
 library(tidyverse)
 ANSES <- read_table2("Data Viudez Argentina.txt")
@@ -8,20 +12,14 @@ head(ANSES)
 
 
 
-# JO (Beneficios Regulares) + MOR (Moratorias) para comparar vs SP (Pensi髇 de sobrevivencia)
+# JO (Beneficios Regulares) + MOR (Moratorias) para comparar vs SP (Pensi贸n de sobrevivencia)
 
 ANSES$JOMOR <- ANSES$JO+ANSES$MOR
 ANSES$muerteJOMOR <-ANSES$muerteJO+ANSES$muerteMOR
 
 
 
-###Tasas Brutas de Mortalidad
 
-ANSES$tasaJO <-ANSES$muerteJO/ANSES$JO
-ANSES$tasaMOR <-ANSES$muerteMOR/ANSES$MOR
-ANSES$tasaSP <-ANSES$muerteSP/ANSES$SP
-ANSES$tasaJOMOR <-ANSES$muerteJOMOR/ANSES$JOMOR
-ANSES$tasaTOT <-ANSES$muerteTotal/ANSES$Total
 
 ##agrego valores "low y high" para poner intervalos de confianza de 95% (1.96 desvios de la media)
 
@@ -86,13 +84,23 @@ print(DtasaAGE)
 write.table(DtasaAGE, "Distribuciontasasporedad.txt",sep="\t")
 
 ###Tasas estandarizadas 
-#Obtain estructura est醤dar (total de la poblaci髇) 
+#Obtener estructura est谩ndar (total de la poblaci贸n) 
 
 ANSES$PopTotal <- sum(ANSES$Total[15:21])
 ANSES$Structure<-ANSES$Total/ANSES$PopTotal
 ANSES$Structure[1:7] <- ANSES$Structure[15:21]
 ANSES$Structure[8:14]<- ANSES$Structure[15:21]
 
+
+###Para calcular las Tasas Estandarizadas de Mortalidad necesito antes las tasas espec铆ficas por grupos de edad 
+
+ANSES$tasaJO <-ANSES$muerteJO/ANSES$JO
+ANSES$tasaMOR <-ANSES$muerteMOR/ANSES$MOR
+ANSES$tasaSP <-ANSES$muerteSP/ANSES$SP
+ANSES$tasaJOMOR <-ANSES$muerteJOMOR/ANSES$JOMOR
+ANSES$tasaTOT <-ANSES$muerteTotal/ANSES$Total
+
+###Tasas estandarizadas por grupos de edad (la suma de estas tasas me va a dar la tasa estandarizada)
 ANSES$StandJO<-ANSES$tasaJO *ANSES$Structure 
 ANSES$StandMOR<-ANSES$tasaMOR *ANSES$Structure 
 ANSES$StandSP<-ANSES$tasaSP *ANSES$Structure 
@@ -136,11 +144,12 @@ Stasa$hiSPJOMOR<-Stasa$StasahiSP/Stasa$StasahiJOMOR
 
 head(Stasa)
 
+###esto es para exportarlo a un txt
 write.table(Stasa, "Distribuciontasasestandarizadas.txt",sep="\t")
 
 
 
-## Descomposici髇 de Kitagawa
+## Descomposici贸n de Kitagawa
 
 
 # Separo el dataset por sexo
@@ -193,7 +202,7 @@ Dif5
 Dif6 <- (CDRSPF - CDRJOMORF)*1000
 Dif6
 
-###Decomposici髇: Diferencia de tasas= RE rate effect + CE composition effect
+###Decomposici贸n: Diferencia de tasas= RE rate effect + CE composition effect
 
 RE1 <- sum(0.5*(Males$SP/sum(Males$SP) + Males$JO/sum(Males$JO))*(Males$tasaSP-Males$tasaJO))
 RE1 *1000
@@ -234,7 +243,7 @@ CE6 <- sum(0.5*(Females$tasaSP+Females$tasaJOMOR)*(Females$SP/sum(Females$SP)-Fe
 CE6*1000
 
 
-#Comparo los resultados de la descomposici髇 con la diferencia original, debiera ser 0 o parecido para comprobar 
+#Comparo los resultados de la descomposici贸n con la diferencia original, debiera ser 0 o parecido para comprobar 
 decres1<- (RE1*1000 + CE1*1000)
 
 decres1-Dif1
@@ -280,7 +289,7 @@ lifetable <- function(nmx,Age,nax){
     nLx[i] <- lx[i+1]*n[i] + ndx[i]*nax[i]
   }
   
-  #Lx o A駉s-Persona
+  #Lx o A帽os-Persona
   
 nLx[length(n)] <- lx[length(n)] * nax[length(n)]
   
@@ -306,7 +315,7 @@ Females$Age<-c(seq(65,95,5))
 Females$nax<-2.5
 
 
-#Tablas por sexo y prestaci髇 para variante media, lo and high
+#Tablas por sexo y prestaci贸n para variante media, lo and high
 #Hombres
 
 TableMJO <- lifetable(nmx=Males$tasaJO,Age=Males$Age,Males$nax)
@@ -389,7 +398,7 @@ TablehiFJOMOR
 
 
 
-#Agrupo las ex en una sola tabla
+#Agrupo las ex (esperanzas de vida) en una sola tabla
 Agegroups<-c(TableMJO$Age)
 MeanMJO<-c(TableMJO$ex)
 LowMJO<-c(TablelowMJO$ex)
@@ -416,6 +425,7 @@ MeanFJOMOR<-c(TableFJOMOR$ex)
 LowFJOMOR<-c(TablelowFJOMOR$ex)
 HiFJOMOR<-c(TablehiFJOMOR$ex)
 
+#esto es para poner todos los resultados en una misma matriz de datos
 Alltables2<-data.frame(Agegroups,MeanMJO,LowMJO,HiMJO,
                        MeanMMOR,LowMMOR,HiMMOR,
                        MeanMSP,LowMSP,HiMSP,
@@ -424,5 +434,5 @@ Alltables2<-data.frame(Agegroups,MeanMJO,LowMJO,HiMJO,
                        MeanFMOR,LowFMOR,HiFMOR,
                        MeanFSP,LowFSP,HiFSP,
                        MeanFJOMOR,LowFJOMOR,HiFJOMOR)
-
+#nuevamente,exporto a txt el resultado
 write.table(Alltables2,"Todaslastablas.txt",sep="\t")
